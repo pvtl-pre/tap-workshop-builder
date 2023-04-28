@@ -1,0 +1,11 @@
+azure_service_principal_client_id     = ""
+azure_service_principal_client_secret = ""
+azure_tenant_id                       = ""
+dns_zone_name                         = ""
+dns_zone_resource_group               = ""
+pivnet_refresh_token                  = ""
+ssh_public_key_path                   = "./sample-ssh-key/id_rsa.pub"
+ssh_private_key_path                  = "./sample-ssh-key/id_rsa"
+ssh_usernames                         = []
+tanzu_registry_username               = ""
+tanzu_registry_password               = ""
