@@ -4,7 +4,27 @@ resource "azurerm_linux_virtual_machine" "jump-server-vms" {
   location            = azurerm_resource_group.user-resource-groups[count.index].location
   resource_group_name = azurerm_resource_group.user-resource-groups[count.index].name
   size                = "Standard_D2s_v3"
-  admin_username      = "${var.ssh_usernames[count.index]}"
+  admin_username      = "admin-${var.ssh_usernames[count.index]}"
+
+  custom_data = base64encode(templatefile("./cloud-init/cloud-config.yaml", {
+    admin_username                         = "admin-${var.ssh_usernames[count.index]}"
+    username                               = var.ssh_usernames[count.index]
+    admin_ssh_public_key                   = tls_private_key.admin.public_key_openssh
+    ssh_public_key                         = tls_private_key.user.public_key_openssh
+    azure_service_principal_client_id      = var.azure_service_principal_client_id
+    azure_service_principal_client_secret  = var.azure_service_principal_client_secret
+    azure_tenant_id                        = var.azure_tenant_id
+    pivnet_refresh_token                   = var.pivnet_refresh_token
+    azure_user_resource_groups_prefix      = var.azure_user_resource_groups_prefix
+    tanzu_registry_username                = var.tanzu_registry_username
+    tanzu_registry_password                = var.tanzu_registry_password
+    dns_zone_name                          = var.dns_zone_name
+    dns_zone_resource_group                = var.dns_zone_resource_group
+    install_tools_script                   = base64encode(file("./scripts/install-tools.sh"))
+    login_script                           = base64encode(file("./scripts/login.sh"))
+    clone_and_setup_tap_made_simple_script = base64encode(file("./scripts/clone-and-setup-tap-made-simple.sh"))
+  }))
+
   network_interface_ids = [
     azurerm_network_interface.jump-server-nics[count.index].id,
   ]
@@ -14,8 +34,8 @@ resource "azurerm_linux_virtual_machine" "jump-server-vms" {
   ]
 
   admin_ssh_key {
-    username   = "${var.ssh_usernames[count.index]}"
-    public_key = file(var.ssh_public_key_path)
+    username   = "admin-${var.ssh_usernames[count.index]}"
+    public_key = tls_private_key.admin.public_key_openssh
   }
 
   os_disk {
@@ -29,45 +49,32 @@ resource "azurerm_linux_virtual_machine" "jump-server-vms" {
     sku       = "18.04-LTS"
     version   = "latest"
   }
+}
+
+resource "null_resource" "cloud-init-wait" {
+  count = length(var.ssh_usernames)
+
+  triggers = {
+    instance_id = azurerm_linux_virtual_machine.jump-server-vms[count.index].id
+  }
 
   connection {
     type        = "ssh"
-    user        = "${var.ssh_usernames[count.index]}"
-    private_key = file("${var.ssh_private_key_path}")
-    host        = azurerm_public_ip.jump-server-pips[count.index].ip_address
+    user        = "admin-${var.ssh_usernames[count.index]}"
+    private_key = tls_private_key.admin.private_key_pem
+    host        = azurerm_linux_virtual_machine.jump-server-vms[count.index].public_ip_address
   }
 
   provisioner "remote-exec" {
     inline = [
-      "mkdir scripts"
+      "echo 'Waiting for cloud-init to finish'", 
+      "cloud-init status --wait > /dev/null",
+      "echo 'cloud-init finished'", 
+      "cloud-init status",
     ]
   }
 
-  provisioner "file" {
-    source      = "scripts/"
-    destination = "scripts"
-  }
-
-  provisioner "remote-exec" {
-    inline = [<<EOF
-      chmod 755 scripts/*.sh
-
-      scripts/install-tools.sh
-
-      AZURE_SERVICE_PRINCIPAL_CLIENT_ID="${var.azure_service_principal_client_id}" \
-        AZURE_SERVICE_PRINCIPAL_CLIENT_SECRET="${var.azure_service_principal_client_secret}" \
-        AZURE_TENANT_ID="${var.azure_tenant_id}" \
-        PIVNET_REFRESH_TOKEN="${var.pivnet_refresh_token}" \
-        scripts/login.sh
-
-      USERNAME="${var.ssh_usernames[count.index]}" \
-        USER_RESOURCE_GROUP="${var.azure_user_resource_groups_prefix}-${var.ssh_usernames[count.index]}" \
-        TANZU_REGISTRY_USERNAME="${var.tanzu_registry_username}" \
-        TANZU_REGISTRY_PASSWORD="${var.tanzu_registry_password}" \
-        DNS_ZONE_NAME="${var.dns_zone_name}" \
-        DNS_ZONE_RESOURCE_GROUP="${var.dns_zone_resource_group}" \
-        scripts/clone-and-setup-tap-made-simple.sh
-EOF
-    ]
-  }
+  depends_on = [
+    azurerm_linux_virtual_machine.jump-server-vms
+  ]
 }

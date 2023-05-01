@@ -1,17 +1,3 @@
-# Outputs
-
-output "ssh_info" {
-  value = values({
-    for jump-server in azurerm_linux_virtual_machine.jump-server-vms : jump-server.id => {
-      ssh_key_username = jump-server.admin_username,
-      ip_address       = jump-server.public_ip_address
-    }
-  })
-  description = "The ssh information for each user's jump server instance."
-}
-
-# Variables
-
 variable "azure_service_principal_client_id" {
   type = string
 }
@@ -40,20 +26,17 @@ variable "pivnet_refresh_token" {
   type = string
 }
 
-variable "ssh_public_key_path" {
-  type = string
-}
-
-variable "ssh_private_key_path" {
-  type = string
-}
-
 variable "tanzu_registry_username" {
   type = string
 }
 
 variable "tanzu_registry_password" {
   type = string
+}
+
+variable "admin_ssh_private_key_path" {
+  type    = string
+  default = "./generated/.ssh/admin_id_rsa"
 }
 
 variable "azure_location" {
@@ -94,4 +77,9 @@ variable "azure_jump_server_subnet_cidr" {
 variable "azure_jump_server_nsg_name" {
   type    = string
   default = "jump-server-nsg"
+}
+
+variable "user_ssh_private_key_path" {
+  type    = string
+  default = "./generated/.ssh/user_id_rsa"
 }
