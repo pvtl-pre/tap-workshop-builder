@@ -1,10 +1,10 @@
-# Tap Workshop Builder
+# TAP Workshop Builder
 
 This project was built to make [TAP Made Simple](https://github.com/pvtl-pre/tap-made-simple/), easier to consume for classroom-like settings.
 
 ## Goals and Audience
 
-Building workshops can be a time consuming process. Workshops should be independent of the day-to-day infrastructure the set of users are accustomed to, in order to lessen the prerequisites required. Tap Workshop Builder utilizes Azure to build infrastructure for a variable set users, all with their own jump servers, in order for them to work through the lab modules of [TAP Made Simple](https://github.com/pvtl-pre/tap-made-simple/).
+Building workshops can be a time consuming process. Workshops should be independent of the day-to-day infrastructure the set of users are accustomed to, in order to lessen the prerequisites required. TAP Workshop Builder utilizes Azure to build infrastructure for a variable set users, all with their own jump servers, in order for them to work through the lab modules of [TAP Made Simple](https://github.com/pvtl-pre/tap-made-simple/).
 
 ## Required CLIs, Plugins and Accounts
 
@@ -15,9 +15,9 @@ Additionally, you will need a [Tanzu Network account](https://network.tanzu.vmwa
 
 ## Azure Setup
 
-The Azure infrastructure built by TAP Workshop Builder is net-new and encapsulated in resource groups for Tap Workshop Builder and each user.
+The Azure infrastructure built by TAP Workshop Builder is net-new and encapsulated in resource groups for TAP Workshop Builder and each user.
 
-- Tap Workshop Builder Resource Group
+- TAP Workshop Builder Resource Group
   - Virtual Network
   - Network Security Groups
   - Subnets
@@ -30,7 +30,7 @@ While the previously listed resources are net-new, some Azure infrastructure mus
 
 ### Service Principal
 
-The [Azure service principal](https://learn.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals) acts as the delegate to your Azure Subscription but with less permissions. It is utilized by Tap Made Simple on the user's jump server to deploy resources for the user. [Create a service principal](https://learn.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal) with a client secret and a [custom role](https://learn.microsoft.com/en-us/azure/role-based-access-control/custom-roles-portal) in the Azure portal and assign the role to the service principal. The custom role should have the following permissions:
+The [Azure service principal](https://learn.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals) acts as the delegate to your Azure Subscription but with less permissions. It is utilized by TAP Made Simple on the user's jump server to deploy resources for the user. [Create a service principal](https://learn.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal) with a client secret and a [custom role](https://learn.microsoft.com/en-us/azure/role-based-access-control/custom-roles-portal) in the Azure portal and assign the role to the service principal. The custom role should have the following permissions:
 
 - Microsoft.ContainerRegistry
 - Microsoft.ContainerService
