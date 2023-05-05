@@ -17,7 +17,7 @@ yq e -i '.tanzu_registry.password = env(TANZU_REGISTRY_PASSWORD)' "$PARAMS_YAML"
 
 yq e -i '.azure.resource_group = env(USER_RESOURCE_GROUP)' "$PARAMS_YAML"
 
-yq e -i '.azure.acr_name = "tapmadesimple" + env(USERNAME)' "$PARAMS_YAML"
+yq e -i '.azure.acr.name = "tapmadesimple" + env(USERNAME)' "$PARAMS_YAML"
 
 yq e -i '.azure.dns.auto_configure = true' "$PARAMS_YAML"
 yq e -i '.azure.dns.dns_zone_name = env(DNS_ZONE_NAME)' "$PARAMS_YAML"
