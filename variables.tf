@@ -22,7 +22,7 @@ variable "ssh_usernames" {
   type = list(any)
 }
 
-variable "pivnet_refresh_token" {
+variable "tanzu_network_refresh_token" {
   type = string
 }
 

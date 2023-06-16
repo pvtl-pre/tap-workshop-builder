@@ -34,7 +34,8 @@ runcmd:
     su - ${username} << EOM
       AZURE_SERVICE_PRINCIPAL_CLIENT_ID="${azure_service_principal_client_id}" \
         AZURE_SERVICE_PRINCIPAL_CLIENT_SECRET="${azure_service_principal_client_secret}" \
-        AZURE_TENANT_ID="${azure_tenant_id}" PIVNET_REFRESH_TOKEN="${pivnet_refresh_token}" \
+        AZURE_TENANT_ID="${azure_tenant_id}" \
+        TANZU_NETWORK_REFRESH_TOKEN="${tanzu_network_refresh_token}" \
         /usr/local/bin/tap-workshop-builder-scripts/login.sh
     EOM
   - |

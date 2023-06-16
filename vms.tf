@@ -14,7 +14,7 @@ resource "azurerm_linux_virtual_machine" "jump-server-vms" {
     azure_service_principal_client_id      = var.azure_service_principal_client_id
     azure_service_principal_client_secret  = var.azure_service_principal_client_secret
     azure_tenant_id                        = var.azure_tenant_id
-    pivnet_refresh_token                   = var.pivnet_refresh_token
+    tanzu_network_refresh_token            = var.tanzu_network_refresh_token
     azure_user_resource_groups_prefix      = var.azure_user_resource_groups_prefix
     tanzu_registry_username                = var.tanzu_registry_username
     tanzu_registry_password                = var.tanzu_registry_password
@@ -67,9 +67,9 @@ resource "null_resource" "cloud-init-wait" {
 
   provisioner "remote-exec" {
     inline = [
-      "echo 'Waiting for cloud-init to finish'", 
+      "echo 'Waiting for cloud-init to finish'",
       "cloud-init status --wait > /dev/null",
-      "echo 'cloud-init finished'", 
+      "echo 'cloud-init finished'",
       "cloud-init status",
     ]
   }
